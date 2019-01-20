@@ -6,6 +6,7 @@ from sklearn.linear_model import LinearRegression
 import matplotlib.pyplot as plt
 from matplotlib import style
 style.use('ggplot')
+import pickle
 
 
 ### Forecast stock prices with linear regression ###
@@ -41,10 +42,21 @@ df.dropna(inplace=True)
 y = np.array(df['label'])
 # create training and testing sets
 X_train, X_test, y_train, y_test = model_selection.train_test_split(X, y, test_size=0.2)
+
+""" ### comment out clf when reading from pickle ###
 # classifier
 clf = LinearRegression()
 # fit(train) features, labels
 clf.fit(X_train, y_train) 
+
+### save classifer to avoid retraining it every time it's used ###
+# write classifer to file
+with open('linearregression.pickle', 'wb') as f:
+    pickle.dump(clf, f) """
+# read classifer from file
+pickle_in = open('linearregression.pickle', 'rb')
+clf = pickle.load(pickle_in)
+
 # test(score) features, labels 
 accuracy = clf.score(X_test, y_test)
 #print(accuracy)
