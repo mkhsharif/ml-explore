@@ -1,11 +1,15 @@
 import pandas as pd
-import quandl, math
+import quandl, math, datetime
 import numpy as np
 from sklearn import preprocessing, model_selection, svm
 from sklearn.linear_model import LinearRegression
+import matplotlib.pyplot as plt
+from matplotlib import style
+style.use('ggplot')
 
-# Forecast stock prices with linear regression
-# parsed from Quandl
+
+### Forecast stock prices with linear regression ###
+### parsed from Quandl ###
 
 df = quandl.get('WIKI/GOOGL')
 df = df[['Adj. Open', 'Adj. High', 'Adj. Low', 'Adj. Close', 'Adj. Volume']]
@@ -47,3 +51,28 @@ accuracy = clf.score(X_test, y_test)
 # make prediction on each value in array (or single value)
 forecast_set = clf.predict(X_lately)
 print(forecast_set, accuracy, forecast_out)
+
+### visualizing forecast data on graph ###
+# specifies column is nan
+df['Forecast'] = np.nan
+
+last_date = df.iloc[-1].name
+last_unix = last_date.timestamp()
+# seconds in a day
+one_day = 86400
+# next day
+next_unix = last_unix + one_day
+
+# populate the dataframe with new dates and forecast values
+for i in forecast_set:
+    next_date = datetime.datetime.fromtimestamp(next_unix)
+    next_unix += one_day
+    df.loc[next_date] = [np.nan for _ in range(len(df.columns)-1)] + [i]
+
+df['Adj. Close'].plot()
+df['Forecast'].plot()
+plt.legend(loc=4)
+plt.xlabel('Date')
+plt.ylabel('Price')
+plt.title('Linear Regression Forecast of Price')
+plt.show()
