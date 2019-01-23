@@ -35,8 +35,8 @@ X = np.array(df.drop(['label'],1))
 y =  np.array(df['label'])
 # scale X before feeding into classifier
 X = preprocessing.scale(X)
-X = X[:-forecast_out]
 X_lately = X[-forecast_out:]
+X = X[:-forecast_out]
 # remove missing values
 df.dropna(inplace=True)
 y = np.array(df['label'])
