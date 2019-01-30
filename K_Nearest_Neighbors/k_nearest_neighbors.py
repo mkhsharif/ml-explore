@@ -2,6 +2,17 @@ import numpy as np
 from sklearn import preprocessing, model_selection, neighbors
 import pandas as pd
 
+
+'''
+K Nearest Neighbors:
+an application of the k nearest neighbors 
+algorithm to detect breast cancer based on
+the classification of cells by their attributes
+
+Dataset Source:
+https://archive.ics.uci.edu/ml/datasets/Breast+Cancer+Wisconsin+%28Original%29
+'''
+
 # read in dataset
 df = pd.read_csv('breast-cancer-wisconsin.data.txt')
 # treat unknowns as outliers
@@ -25,3 +36,11 @@ clf.fit(X_train, y_train)
 
 accuracy = clf.score(X_test, y_test)
 print(accuracy)
+
+# custom prediction of new value
+example_measures = np.array([[4,2,1,1,1,2,3,2,1],[4,2,1,2,2,2,3,2,1]])
+# e.g. X.reshape(-1, 1) if data has single feature
+# e.g. X.reshape(1, -1) if data has single sample
+example_measures = example_measures.reshape(2, -1)
+prediction = clf.predict(example_measures)
+print(prediction)
