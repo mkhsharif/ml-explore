@@ -4,6 +4,8 @@ import matplotlib.pyplot as plt
 import warnings
 from matplotlib import style 
 from collections import Counter
+import pandas as pd
+import random
 style.use('fivethirtyeight')
 
 # define two classes and their features
@@ -30,6 +32,9 @@ def k_nearest_neighbors(data, predict, k=3):
 
     return vote_result
 
+'''
+Algorithm Test 
+
 result = k_nearest_neighbors(dataset, new_features, k=3)
 print(result)
 
@@ -42,3 +47,41 @@ plt.scatter(new_features[0], new_features[1], color=result)
 
 # show visual representation of dataset
 plt.show()
+'''
+
+# Algorithm Application with real Data
+
+df = pd.read_csv('breast-cancer-wisconsin.data.txt')
+df.replace('?', -99999, inplace=True)
+df.drop(['id'], 1, inplace=True)
+full_data = df.astype(float).values.tolist()
+random.shuffle(full_data)
+
+test_size = 0.2
+# splice data 
+train_set = {2:[], 4:[]}
+test_set = {2:[], 4:[]}
+# training data (up to last 20%)
+train_data = full_data[:-int(test_size*len(full_data))]
+# testing data (last 20%)
+test_data = full_data[-int(test_size*len(full_data)):]
+
+# populate train/test set dictionary
+for i in train_data:
+    train_set[i[-1]].append(i[:-1])
+
+for i in test_data:
+    test_set[i[-1]].append(i[:-1])
+
+correct = 0
+total = 0
+
+for group in test_set:
+    for data in test_set[group]:
+        vote = k_nearest_neighbors(train_set, data, k=5)
+        # if group from test set equals vote from knn classifier mark as correct
+        if group == vote:
+            correct += 1
+        total += 1 
+
+print('Accuracy:', correct/total)
