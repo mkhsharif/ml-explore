@@ -28,9 +28,11 @@ def k_nearest_neighbors(data, predict, k=3):
     votes = [i[1] for i in sorted(distances) [:k]]
     # take the most common vote 
     vote_result = Counter(votes).most_common(1)[0][0]
-    print(Counter(votes).most_common(1))
+    confidence = Counter(votes).most_common(1)[0][1] / k
+    
+    #print(vote_result, confidence)
 
-    return vote_result
+    return vote_result, confidence
 
 '''
 Algorithm Test 
@@ -51,37 +53,44 @@ plt.show()
 
 # Algorithm Application with real Data
 
-df = pd.read_csv('breast-cancer-wisconsin.data.txt')
-df.replace('?', -99999, inplace=True)
-df.drop(['id'], 1, inplace=True)
-full_data = df.astype(float).values.tolist()
-random.shuffle(full_data)
+accuracies = []
 
-test_size = 0.2
-# splice data 
-train_set = {2:[], 4:[]}
-test_set = {2:[], 4:[]}
-# training data (up to last 20%)
-train_data = full_data[:-int(test_size*len(full_data))]
-# testing data (last 20%)
-test_data = full_data[-int(test_size*len(full_data)):]
+for i in range(25):
+    df = pd.read_csv('breast-cancer-wisconsin.data.txt')
+    df.replace('?', -99999, inplace=True)
+    df.drop(['id'], 1, inplace=True)
+    full_data = df.astype(float).values.tolist()
+    random.shuffle(full_data)
 
-# populate train/test set dictionary
-for i in train_data:
-    train_set[i[-1]].append(i[:-1])
+    test_size = 0.2
+    # splice data 
+    train_set = {2:[], 4:[]}
+    test_set = {2:[], 4:[]}
+    # training data (up to last 20%)
+    train_data = full_data[:-int(test_size*len(full_data))]
+    # testing data (last 20%)
+    test_data = full_data[-int(test_size*len(full_data)):]
 
-for i in test_data:
-    test_set[i[-1]].append(i[:-1])
+    # populate train/test set dictionary
+    for i in train_data:
+        train_set[i[-1]].append(i[:-1])
 
-correct = 0
-total = 0
+    for i in test_data:
+        test_set[i[-1]].append(i[:-1])
 
-for group in test_set:
-    for data in test_set[group]:
-        vote = k_nearest_neighbors(train_set, data, k=5)
-        # if group from test set equals vote from knn classifier mark as correct
-        if group == vote:
-            correct += 1
-        total += 1 
+    correct = 0
+    total = 0
 
-print('Accuracy:', correct/total)
+    for group in test_set:
+        for data in test_set[group]:
+            vote, confidence = k_nearest_neighbors(train_set, data, k=5)
+            # if group from test set equals vote from knn classifier mark as correct
+            if group == vote:
+                correct += 1
+            total += 1 
+
+    # print('Accuracy:', correct/total)
+    accuracies.append(correct/total)
+
+# get the mean of accuracies for i tests
+print(sum(accuracies)/len(accuracies))
