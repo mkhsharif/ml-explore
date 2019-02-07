@@ -1,10 +1,10 @@
 import numpy as np
-from sklearn import preprocessing, model_selection, neighbors
+from sklearn import preprocessing, model_selection, svm
 import pandas as pd
 
 
 '''
-K Nearest Neighbors:
+Support Vector Machine:
 an application of the k nearest neighbors 
 algorithm to detect breast cancer based on
 the classification of cells by their attributes
@@ -31,7 +31,7 @@ y = np.array(df['class'])
 X_train, X_test, y_train, y_test = model_selection.train_test_split(X,y,test_size=0.2)
 
 # fit data using K Nearest Neighbors classifier 
-clf = neighbors.KNeighborsClassifier()
+clf = svm.SVC(gamma='auto')
 clf.fit(X_train, y_train)
 
 accuracy = clf.score(X_test, y_test)

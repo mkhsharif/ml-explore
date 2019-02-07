@@ -56,7 +56,7 @@ plt.show()
 accuracies = []
 
 for i in range(25):
-    df = pd.read_csv('breast-cancer-wisconsin.data.txt')
+    df = pd.read_csv('../Data/breast-cancer-wisconsin.data.txt')
     df.replace('?', -99999, inplace=True)
     df.drop(['id'], 1, inplace=True)
     full_data = df.astype(float).values.tolist()
